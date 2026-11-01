@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.0 — 1 November 2026
+
+- **Fire OS 6 / Android API 25 Support:** Lowered `minSdk` to 25 and eliminated `java.nio.file` in `StudioProvider` for full compatibility with Fire OS 6 devices (such as Fire TV 3rd Gen Pendant `AFTMM`).
+- **Automatic TV IP Weather Detection:** Added `"auto"` weather mode to `StudioConfig` and HTTPS IP geolocation in `WeatherInfo` (via `ipwho.is` and `ipapi.co`), automatically resolving city coordinates with 24h caching. Added on-screen "Weather" toggle to the Customize menu.
+- **Open-Source Wallpaper Providers:** Added on-screen "Wallpaper source" menu to select between **NASA Deep Space** photography (using NASA's official Image Library archive API) and **Bing Daily Landscapes**, with automatic multi-image rotation.
+- **HomeWatcherService Fallback:** Added native background service fallback running `HomePressWatcher` via `READ_LOGS` with a 350ms transition anchor. Solves Home button redirection on Fire OS 6 devices where Amazon hides or restricts third-party accessibility service menus.
+- **GitHub Actions Automated CI/CD:** Added automated workflow compiling and uploading launcher APKs on every push to main.
+
 ## 1.8.0 — 31 October 2026
 
 - Add a separate screensaver wallpaper setting: use the active design’s image/rotation or upload one custom image shared by all designs. Theme wallpapers are unchanged.

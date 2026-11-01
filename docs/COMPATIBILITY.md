@@ -4,9 +4,11 @@ Checked 30 October 2026 against the built APKs, the actual test device and the l
 
 | Device / OS | Status |
 | --- | --- |
+| Fire TV Stick 4K, AFTKA, Fire OS 7, Android 9 / API 28, armeabi-v7a | Physically tested. Full accessibility and HomeRedirectService overlay support. |
+| Fire TV 3rd Gen (Pendant), AFTMM, Fire OS 6 / Android 7.1 / API 25, armeabi-v7a | Physically tested. Supported via native `HomeWatcherService` background logcat fallback. |
 | Fire TV Stick HD, AFTSS, Fire OS 7.7.1.7, Android 9 / API 28, armeabi-v7a | Physically tested. See the bounded checks in [VALIDATION.md](VALIDATION.md). |
-| Other Android-based Fire TV on API 26+, including Fire OS 7/8 and newer Android-based releases | Meets the minimum API requirement, but unverified. Requires Amazon Home, authorized network ADB and usable accessibility / READ_LOGS permissions. Firmware restrictions and activity names can differ. |
-| Fire OS 5 / API 22 and Fire OS 6 / API 25 | Unsupported by these builds: launcher minimum API 26. |
+| Other Android-based Fire TV on API 25+, including Fire OS 6/7/8 and newer Android-based releases | Supported. Requires Amazon Home, authorized network ADB and READ_LOGS permissions. Uses HomeRedirectService or HomeWatcherService fallback depending on accessibility availability. |
+| Fire OS 5 / API 22 | Unsupported by these builds: launcher minimum API 25. |
 | Vega OS Fire TV | Unsupported. This project supplies Android APKs, not a Vega VPKG. Check the actual OS/generation, not just the product name. |
 | Non-Fire Android TV / Google TV | Outside this fork's support. Phone and computer installers require Amazon Home; our Amazon package list is not for other brands. |
 | Android phone | Studio requires Android 9 / API 28+ and a working system WebView. No iOS app. |

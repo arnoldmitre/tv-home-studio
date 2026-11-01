@@ -32,7 +32,7 @@
 
 [Computer commands and setup →](docs/INSTALL.md#with-a-computer)
 
-**Requirements:** Android 9+ phone; Android-based Fire TV API 26+. Fire OS 5/6 and Vega OS are unsupported. [Compatibility details](docs/COMPATIBILITY.md).
+**Requirements:** Android 9+ phone; Android-based Fire TV API 25+ (Fire OS 6, 7, 8). Fire OS 5 and Vega OS are unsupported. [Compatibility details](docs/COMPATIBILITY.md).
 
 ## See the designs
 
@@ -112,10 +112,12 @@ Sleep, Restart, Cast and Inputs depend on the TV's firmware and permissions. The
 
 | Device/software | Status |
 | --- | --- |
+| Fire TV Stick 4K — AFTKA, Fire OS 7 / Android 9, **armeabi-v7a** | Physically tested. Full accessibility and HomeRedirectService overlay support. |
+| Fire TV 3rd Gen (Pendant) — AFTMM, Fire OS 6.2.8.7 / Android 7.1 (API 25), **armeabi-v7a** | Physically tested. Supported via native `HomeWatcherService` background logcat fallback. |
 | Fire TV Stick HD — AFTSS, Fire OS 7.7.1.7 / Android 9, **armeabi-v7a** | Physically tested. Both APKs contain no native ABI-specific libraries; ARMv7 needs no special download. |
-| Other Android-based Fire TVs, Android 8 / API 26 or newer | Unverified; firmware, ADB and accessibility restrictions vary. |
+| Other Android-based Fire TVs, Android 7.1 / API 25 or newer | Supported; firmware, ADB and accessibility restrictions vary. |
 | Android phone | Android 9 or newer. |
-| Fire OS 5/6, Vega OS, non-Fire Android TV / Google TV | Outside this fork's supported installer scope. Fire OS 5/6 are below the launcher's minimum API. |
+| Fire OS 5, Vega OS, non-Fire Android TV / Google TV | Outside this fork's supported installer scope. Fire OS 5 is below the launcher's minimum API. |
 | Wireless debugging | Classic authorized ADB over TCP, usually port 5555. Android's newer TLS pairing flow is not supported. |
 
 Upstream device coverage is not a claim of support by this fork. [Detailed compatibility](docs/COMPATIBILITY.md) · [What was tested](docs/VALIDATION.md)

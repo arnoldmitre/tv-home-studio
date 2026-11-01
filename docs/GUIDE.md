@@ -10,7 +10,7 @@ TV Home Studio 1.8 is an Android phone companion for the included TV Home 4.8 la
 4. Tap Install TV Home. Then choose **This home**. **Default home** switches back to Amazon Home without uninstalling either launcher.
 5. Review cleanup separately; only checked extras are disabled. Nothing is uninstalled or data-cleared.
 
-Supported connection: classic authenticated ADB over TCP on Android-based Fire TV, Android 8/API 26 or newer. Manufacturer may be Amazon or an integrated Fire TV vendor. Vega OS and Android wireless-debugging TLS pairing ports are not supported. Network discovery is not included; enter the IP explicitly. Capabilities still depend on firmware.
+Supported connection: classic authenticated ADB over TCP on Android-based Fire TV, Android 7.1/API 25 or newer. Manufacturer may be Amazon or an integrated Fire TV vendor. Vega OS and Android wireless-debugging TLS pairing ports are not supported. Network discovery is not included; enter the IP explicitly. Capabilities still depend on firmware.
 
 ## Designs and customization
 
