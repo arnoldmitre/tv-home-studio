@@ -9,7 +9,7 @@
 
 ## Changes
 
-- Fire OS 6 (Android 7.1 / API 25) compatibility with native `HomeWatcherService` background logcat fallback.
+- Fire OS 6 (Android 7.1 / API 25) compatibility with native `HomeWatcherService` background logcat fallback and instant system alert overlay (`SYSTEM_ALERT_WINDOW` / `TYPE_SYSTEM_ALERT`) bypassing Android 5-second `stopAppSwitches()` cooldown.
 - Automatic weather detection using TV IP location with local 24h caching.
 - Online wallpaper source selection: NASA Image Library deep-space photography & Bing Daily Landscapes.
 - Phone companion updated to connect to API 25+ Fire TV devices over ADB Wi-Fi.

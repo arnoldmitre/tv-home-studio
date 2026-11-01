@@ -4,7 +4,15 @@
 
 **Credits:** [cleanyourtv](https://github.com/Gathin23/cleanyourtv) → [fire-tv-cleanup](https://github.com/itsmeterrylin/fire-tv-cleanup); phone workflow inspired by [cleanyourtv-app](https://github.com/udhaykumarbala/cleanyourtv-app). [Licenses and attribution](docs/CREDITS.md).
 
-**Completely vibe coded with Codex.** Community software, tested on a Fire TV Stick HD.
+**Completely vibe coded with Codex.** Community software, tested on Fire TV Stick HD and Fire TV 3rd Gen (Pendant).
+
+## What's New in v1.9.0
+
+- **Fire OS 6 & Android 7.1 (API 25) Support:** Full compatibility with Fire OS 6 devices (including the Fire TV 3rd Gen Pendant `AFTMM`) alongside Fire OS 7 and 8.
+- **HomeWatcherService with Instant System Overlay:** On devices where Amazon blocks or hides accessibility services, `HomeWatcherService` runs as a native background service using `READ_LOGS` and mounts `HomeSurface` as an instant system alert overlay (`TYPE_SYSTEM_ALERT`). Completely bypasses the Android 5-second `stopAppSwitches()` cooldown so the remote's Home button responds within ~16ms without dropping to Amazon Home.
+- **Automatic IP-Based Weather:** Set weather to `"auto"` in TV Customize to automatically resolve city weather based on the TV's network location with 24-hour caching.
+- **NASA Deep Space & Bing Wallpapers:** Switch wallpaper sources directly on your TV between NASA's official Image Library archive and Bing Daily Landscapes with automatic rotation.
+- **Automated CI/CD Builds:** GitHub Actions workflow automatically compiles and publishes both the TV Launcher APK and Phone Companion APK on every push.
 
 ## Choose how to install
 
@@ -67,12 +75,12 @@ Real captures from a Fire TV Stick HD, with weather and location hidden. Wallpap
 | App library and favorites | Open TV apps, pin up to four favorites, reorder them left/right and remove favorites. Hold OK or press Menu on an app for its options. |
 | Hidden apps | Hide apps from Home and bring them back through Hidden apps or the phone. Hiding does not uninstall or disable them. Open an app's system settings from its menu. |
 | Remote navigation | Navigate with the TV remote's D-pad and OK. Back clears the selection or returns to Home; the heading changes to the selected app name and returns to its greeting when no app is selected. |
-| Weather | Choose a city or leave weather Off. Cached forecasts, a manual refresh option and per-theme visibility. No automatic IP-location lookup. |
+| Weather | Automatic local weather by TV IP location, manual city selection, or Off. Cached forecasts, manual refresh option and per-theme visibility. |
 | Wallpaper screensaver | Choose the active theme’s wallpaper or upload a separate screensaver image shared across all designs. On Home only, show that image, bold clock, weekday, date and optional city weather after two idle minutes. Brief slide-up entrance and upward swipe dismissal; subtle text-position changes once per minute. The first key dismisses without opening an app. |
 | Idle and power | Sleep after fifteen idle minutes on Home, or use manual **Sleep** / **Restart** from Power. Turn the Home idle screen off from TV Customize or phone Themes. Other apps keep their own playback/idle behavior; global Fire OS timeouts are unchanged. |
 | Cast, Settings and network | Open Fire TV Display Mirroring, system Settings or network settings directly from Home. Availability depends on the device. |
 | TV inputs | Show an Inputs menu for supported integrated TVs. Choose automatic detection, always show or hide; sticks normally have no TV inputs to expose. |
-| Home selection and recovery | Switch between **Default home** and **This home**, with shared Home-button/Back-return handling, startup and wake recovery across all layouts. The phone provides a Home-switching repair action. |
+| Home selection and recovery | Switch between **Default home** and **This home**. Dual-engine Home redirection: uses AccessibilityService on supported firmware, or native HomeWatcherService with instant hardware-accelerated system alert overlay (`SYSTEM_ALERT_WINDOW` / `READ_LOGS`) on restricted Fire OS 6 firmware. Immediate Home return and smooth background activity back-stack anchoring. |
 | Lightweight rendering | Native Java views, cached artwork/wallpaper/weather, no video wallpaper or continuous screensaver animation. Hidden Home releases its drawing surface and pauses idle work while another app is in front. |
 
 </details>
