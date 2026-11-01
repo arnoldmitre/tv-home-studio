@@ -21,12 +21,18 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x launcher/gradlew
 
-      - name: Build Launcher APK
+      - name: Build APKs
         working-directory: launcher
-        run: ./gradlew :app:assembleDebug
+        run: ./gradlew :app:assembleDebug :companion:assembleDebug
 
-      - name: Upload Launcher APK
+      - name: Upload TV Launcher APK
         uses: actions/upload-artifact@v4
         with:
           name: TV-Home-Launcher-debug
           path: launcher/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Phone Companion APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TV-Home-Studio-Phone-Companion-debug
+          path: launcher/companion/build/outputs/apk/debug/companion-debug.apk
