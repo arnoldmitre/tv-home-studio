@@ -92,6 +92,15 @@ public class HomeWatcherService extends Service {
         }
 
         Log.i(TAG, "Redirecting Home button press to TV Home Studio");
+        launchHomeActivity();
+        handler.postDelayed(this::launchHomeActivity, 350);
+    }
+
+    private void launchHomeActivity() {
+        MainActivity current = MainActivity.currentHome();
+        if (current != null && current.isHomeResumed()) {
+            return;
+        }
         Intent intent = new Intent(this, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION)
                 .putExtra("com.gathin.tvhome.REDIRECT_REQUEST", true);
