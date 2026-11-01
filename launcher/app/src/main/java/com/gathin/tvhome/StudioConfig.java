@@ -42,7 +42,7 @@ final class StudioConfig {
         String idleWallpaper=source.optString("idleWallpaper","");
         if(!idleWallpaper.isEmpty()&&!id(idleWallpaper))throw new IllegalArgumentException("Invalid screensaver wallpaper");
         result.put("idleWallpaper",idleWallpaper);
-        JSONObject w=source.optJSONObject("weather");if(w==null)w=new JSONObject();String mode=w.optString("mode","off");if(mode.equals("auto"))mode="off";if(!Arrays.asList("off","city").contains(mode))throw new IllegalArgumentException("Invalid weather mode");
+        JSONObject w=source.optJSONObject("weather");if(w==null)w=new JSONObject();String mode=w.optString("mode","off");if(!Arrays.asList("off","city","auto").contains(mode))throw new IllegalArgumentException("Invalid weather mode");
         JSONObject weather=new JSONObject().put("mode",mode);
         if(mode.equals("city")){double lat=w.getDouble("latitude"),lon=w.getDouble("longitude");if(!Double.isFinite(lat)||!Double.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)throw new IllegalArgumentException("Invalid coordinates");String name=w.getString("name").trim();if(name.isEmpty()||name.length()>60)throw new IllegalArgumentException("Invalid location name");weather.put("latitude",lat).put("longitude",lon).put("name",name);}
         result.put("weather",weather);

@@ -37,6 +37,9 @@ public final class WeatherInfo {
                 if(key.equals(cache.getString("key",""))&&now>=cache.getLong("fetched",0)&&now-cache.getLong("fetched",0)<3600000){next=cache.getString("label","Weather unavailable");time=cache.getLong("fetched",0);}
                 else{
                     JSONObject place=weather;
+                    if(place.optString("mode","").equals("auto")){
+                        place=resolveIpLocation(cache,now);
+                    }
                     JSONObject data=com.veyra.shared.WeatherApi.current(place,com.veyra.shared.WeatherApi::json);double temperature=data.getDouble("temperature_2m");cache.edit().remove("error").apply();
                     next=place.optString("name","Nearby")+" · "+Math.round(temperature)+"° · "+condition(data.getInt("weather_code"));time=now;cache.edit().putString("key",key).putString("label",next).putLong("fetched",now).apply();
                 }
@@ -45,6 +48,30 @@ public final class WeatherInfo {
         },"home-weather").start();
     }
     static JSONObject status(Context c)throws JSONException{SharedPreferences cache=c.getSharedPreferences("studio_weather",Context.MODE_PRIVATE);return new JSONObject().put("label",cache.getString("label","")).put("fetched",cache.getLong("fetched",0)).put("error",cache.getString("error","")).put("running",RUNNING.get());}
+    private static JSONObject resolveIpLocation(SharedPreferences cache, long now) throws Exception {
+        String city = cache.getString("auto_city", "");
+        double lat = Double.longBitsToDouble(cache.getLong("auto_lat", 0));
+        double lon = Double.longBitsToDouble(cache.getLong("auto_lon", 0));
+        if (!city.isEmpty() && now >= cache.getLong("auto_loc_fetched", 0) && now - cache.getLong("auto_loc_fetched", 0) < 86400000L) {
+            return new JSONObject().put("name", city).put("latitude", lat).put("longitude", lon);
+        }
+        try {
+            JSONObject o = com.veyra.shared.WeatherApi.json("https://ipwho.is/");
+            if (o.optBoolean("success", false)) {
+                city = o.optString("city", o.optString("region", "Nearby"));
+                lat = o.getDouble("latitude");
+                lon = o.getDouble("longitude");
+            }
+        } catch (Exception ignored) {}
+        if (city.isEmpty()) {
+            JSONObject o = com.veyra.shared.WeatherApi.json("https://ipapi.co/json/");
+            city = o.optString("city", o.optString("region", "Nearby"));
+            lat = o.getDouble("latitude");
+            lon = o.getDouble("longitude");
+        }
+        cache.edit().putString("auto_city", city).putLong("auto_lat", Double.doubleToLongBits(lat)).putLong("auto_lon", Double.doubleToLongBits(lon)).putLong("auto_loc_fetched", now).apply();
+        return new JSONObject().put("name", city).put("latitude", lat).put("longitude", lon);
+    }
     static void retry(){MAIN.post(()->{generation++;lastAttempt=0;fetched=0;for(WeakReference<TextView> ref:new ArrayList<>(VIEWS)){TextView v=ref.get();if(v!=null){v.getContext().getSharedPreferences("studio_weather",Context.MODE_PRIVATE).edit().remove("fetched").apply();bind(v);}}});}
     private static void render(TextView v){if(!android.text.TextUtils.equals(v.getText(),label))v.setText(label);v.setContentDescription(label+". Celsius. "+ATTRIBUTION);}
     private static void publish(){for(Iterator<WeakReference<TextView>> it=VIEWS.iterator();it.hasNext();){TextView v=it.next().get();if(v==null)it.remove();else render(v);}}

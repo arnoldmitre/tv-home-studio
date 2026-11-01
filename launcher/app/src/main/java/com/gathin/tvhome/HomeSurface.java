@@ -188,10 +188,33 @@ public final class HomeSurface extends FrameLayout {
     private void idleMenu(){menu("Home idle screen",Arrays.asList("On: wallpaper at 2 min, sleep at 15 min","Off: use Fire OS idle settings"),Arrays.asList(()->setIdle(true),()->setIdle(false)));}
     private void setIdle(boolean enabled){try{StudioConfig.save(getContext(),StudioConfig.read(getContext()).put("idleScreen",enabled));}catch(Exception e){Toast.makeText(getContext(),"Could not save idle setting",Toast.LENGTH_SHORT).show();}}
     private void customize(){
-        List<String> names=new ArrayList<>(Arrays.asList("Home screen","Themes","Wallpaper source","Home idle screen","Hidden apps","Network settings"));
-        List<Runnable> actions=new ArrayList<>(Arrays.asList(this::homeMenu,this::themeMenu,this::wallpaperSourceMenu,this::idleMenu,()->{page="hidden";selected="all";build();},()->launch(new Intent(Settings.ACTION_WIFI_SETTINGS))));
+        List<String> names=new ArrayList<>(Arrays.asList("Home screen","Themes","Wallpaper source","Weather","Home idle screen","Hidden apps","Network settings"));
+        List<Runnable> actions=new ArrayList<>(Arrays.asList(this::homeMenu,this::themeMenu,this::wallpaperSourceMenu,this::weatherMenu,this::idleMenu,()->{page="hidden";selected="all";build();},()->launch(new Intent(Settings.ACTION_WIFI_SETTINGS))));
         if(StudioConfig.theme(getContext()).optJSONArray("wallpapers").length()>1){names.add("Next wallpaper");actions.add(()->{String key="wallpaper_index_"+StudioConfig.theme(getContext()).optString("id");prefs.edit().putInt(key,prefs.getInt(key,0)+1).apply();setBackground(HomeWallpaper.background(getContext()));});}
         menu("Make yourself at home",names,actions);
+    }
+    private void weatherMenu(){
+        JSONObject w=StudioConfig.read(getContext()).optJSONObject("weather");
+        String cur=w!=null?w.optString("mode","off"):"off";
+        List<String> names=Arrays.asList(
+            "Auto: IP location"+(cur.equals("auto")?"  ·  Current":""),
+            "Off"+(cur.equals("off")?"  ·  Current":"")
+        );
+        List<Runnable> actions=Arrays.asList(
+            ()->setWeatherMode("auto"),
+            ()->setWeatherMode("off")
+        );
+        menu("Weather",names,actions);
+    }
+    private void setWeatherMode(String mode){
+        dismissMenu();
+        try{
+            JSONObject config=StudioConfig.read(getContext());
+            config.put("weather",new JSONObject().put("mode",mode));
+            StudioConfig.save(getContext(),config);
+            WeatherInfo.retry();
+            Toast.makeText(getContext(),mode.equals("auto")?"Detecting location for weather…":"Weather turned off",Toast.LENGTH_SHORT).show();
+        }catch(Exception e){Toast.makeText(getContext(),"Could not update weather",Toast.LENGTH_SHORT).show();}
     }
     private void wallpaperSourceMenu(){
         String cur=StudioConfig.theme(getContext()).optString("wallpaperSource","custom");
