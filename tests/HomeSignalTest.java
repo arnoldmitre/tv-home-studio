@@ -16,6 +16,15 @@ public final class HomeSignalTest {
   check(!HomeSignal.matches(resume.replace("[0,","[10,")),"other-user resume");
   check(!HomeSignal.matches(resume.replace("HomeActivity_vNext","MainSettingsActivity")),"settings resume");
   check(!HomeSignal.matches(resume.replace("am_resume_activity","am_pause_activity")),"pause is not resume");
+  String externalResume="I/am_resume_activity(  527): [0,61775138,1173,com.github.damontecres.wholphin/.MainActivity]";
+  check(HomeSignal.kind(externalResume)==HomeSignal.EXTERNAL_RESUME,"external app resume");
+  check(!HomeSignal.matches(externalResume),"external app is not home");
+  String settingsResume="I/am_resume_activity(  527): [0,12345,1175,com.amazon.tv.settings/.MainActivity]";
+  check(HomeSignal.kind(settingsResume)==HomeSignal.SETTINGS_RESUME,"settings app resume");
+  check(!HomeSignal.matches(settingsResume),"settings app is not home");
+  String tvhomeResume="I/am_resume_activity(  527): [0,262508959,1180,com.gathin.tvhome/.MainActivity]";
+  check(HomeSignal.kind(tvhomeResume)==HomeSignal.TVHOME_RESUME,"tvhome resume");
+  check(!HomeSignal.matches(tvhomeResume),"tvhome resume is not amazon home");
   for(int kind:new int[]{HomeSignal.SYSTEM_HOME,HomeSignal.APP_HOME,HomeSignal.RESUMED_HOME}){
    check(HomeSignal.shouldRedirect(kind,false,false,false),"normal Home return");
    check(!HomeSignal.shouldRedirect(kind,true,false,false),"external launch preserved");

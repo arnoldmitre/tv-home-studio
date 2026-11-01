@@ -46,9 +46,13 @@ final class HomePressWatcher implements AutoCloseable {
                     while (!closed && (line = reader.readLine()) != null) {
                         long now = SystemClock.uptimeMillis();
                         int kind=HomeSignal.kind(line);
-                        if (kind!=HomeSignal.NONE && now - lastSignal > 250) {
-                            lastSignal = now;
-                            main.post(() -> { if (!closed) onHome.accept(kind); });
+                        if (kind != HomeSignal.NONE) {
+                            if (HomeSignal.isHome(kind)) {
+                                if (now - lastSignal < 200) continue;
+                                lastSignal = now;
+                            }
+                            final int k = kind;
+                            main.post(() -> { if (!closed) onHome.accept(k); });
                         }
                     }
                 } finally { child.destroy(); process = null; }

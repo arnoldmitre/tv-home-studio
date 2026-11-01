@@ -440,7 +440,14 @@ public class HomeRedirectService extends AccessibilityService {
     }
     public static void activityReady(MainActivity activity, HomeSurface surface) {
         HomeRedirectService s = instance;
-        if (s == null || !activity.isHomeResumed()) return;
+        if (s == null) {
+            HomeWatcherService watcher = HomeWatcherService.getInstance();
+            if (watcher != null) {
+                watcher.onActivityReady(activity, surface);
+            }
+            return;
+        }
+        if (!activity.isHomeResumed()) return;
         if (s.powerActions != null && s.powerActions.pending()) return;
         int request = activity.getIntent().getIntExtra(EXTRA_REDIRECT, 0);
         activity.getIntent().removeExtra(EXTRA_REDIRECT);
@@ -483,6 +490,10 @@ public class HomeRedirectService extends AccessibilityService {
         if (s != null && s.resumedActivity == activity) {
             s.resumedActivity = null;
         }
+        HomeWatcherService watcher = HomeWatcherService.getInstance();
+        if (watcher != null) {
+            watcher.onActivityPaused(activity);
+        }
     }
     private boolean isForegroundWindow(int windowId){
         java.util.List<android.view.accessibility.AccessibilityWindowInfo> windows=getWindows();
@@ -521,7 +532,15 @@ public class HomeRedirectService extends AccessibilityService {
         Context context=source.getContext();
         HomeRedirectService s = instance;
         Intent request = new Intent(intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (s == null) { startExternalActivity(context, request); return; }
+        if (s == null) {
+            HomeWatcherService watcher = HomeWatcherService.getInstance();
+            if (watcher != null) {
+                watcher.launchFromSurface(source, request);
+                return;
+            }
+            startExternalActivity(context, request);
+            return;
+        }
         s.stopRecovery();s.handler.removeCallbacks(s.wakeRedirect);
         request.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         s.handler.removeCallbacks(s.redirect);
@@ -620,12 +639,22 @@ public class HomeRedirectService extends AccessibilityService {
 
     static void refreshHome(){new Handler(Looper.getMainLooper()).post(()->{
         if(instance!=null&&instance.overlay!=null)instance.overlay.refresh();
+        HomeWatcherService watcher = HomeWatcherService.getInstance();
+        if(watcher!=null)watcher.refreshOverlay();
         MainActivity current=MainActivity.currentHome();if(current!=null)current.surface().refresh();
     });}
 
     static boolean isBound() { return instance != null; }
 
-    static org.json.JSONObject health(Context context)throws org.json.JSONException{return new org.json.JSONObject().put("configured",isEnabled(context)).put("connected",(isBound()||HomeWatcherService.isRunning())&&isEnabled(context)).put("connectionEpoch",connectionEpoch).put("interactive",((android.os.PowerManager)context.getSystemService(POWER_SERVICE)).isInteractive()).put("overlay",instance!=null&&instance.attached).put("readLogs",context.checkSelfPermission(android.Manifest.permission.READ_LOGS)==android.content.pm.PackageManager.PERMISSION_GRANTED);}
+    static org.json.JSONObject health(Context context)throws org.json.JSONException{
+        return new org.json.JSONObject()
+                .put("configured",isEnabled(context))
+                .put("connected",(isBound()||HomeWatcherService.isRunning())&&isEnabled(context))
+                .put("connectionEpoch",connectionEpoch > 0 ? connectionEpoch : HomeWatcherService.getConnectionEpoch())
+                .put("interactive",((android.os.PowerManager)context.getSystemService(POWER_SERVICE)).isInteractive())
+                .put("overlay",(instance!=null&&instance.attached) || HomeWatcherService.isOverlayAttached())
+                .put("readLogs",context.checkSelfPermission(android.Manifest.permission.READ_LOGS)==android.content.pm.PackageManager.PERMISSION_GRANTED);
+    }
     static boolean repairHome(Context context){
         if(!isEnabled(context))return false;
         HomeWatcherService.startIfNecessary(context);
@@ -647,7 +676,11 @@ public class HomeRedirectService extends AccessibilityService {
         if(custom)HomeWatcherService.startIfNecessary(context);
         Context app=context.getApplicationContext();
         new Handler(Looper.getMainLooper()).post(()->{
-            if(!custom&&instance!=null){instance.handler.removeCallbacksAndMessages(null);instance.cancelRedirect();instance.clearExternalLaunch();instance.destroyOverlay();if(instance.homeWatcher!=null){instance.homeWatcher.close();instance.homeWatcher=null;}}
+            if(!custom){
+                if(instance!=null){instance.handler.removeCallbacksAndMessages(null);instance.cancelRedirect();instance.clearExternalLaunch();instance.destroyOverlay();if(instance.homeWatcher!=null){instance.homeWatcher.close();instance.homeWatcher=null;}}
+                HomeWatcherService watcher=HomeWatcherService.getInstance();
+                if(watcher!=null)watcher.hideOverlay();
+            }
             Intent intent=custom?new Intent(app,MainActivity.class):new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(AMAZON_LAUNCHER);
             try{app.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_ANIMATION));}
             catch(RuntimeException e){Toast.makeText(app,"Open your Home screen from the remote",Toast.LENGTH_LONG).show();}
