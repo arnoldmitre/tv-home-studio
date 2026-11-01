@@ -10,6 +10,7 @@ import android.os.StatFs;
 import android.provider.Settings;
 import android.view.*;
 import android.widget.*;
+import org.json.JSONObject;
 import java.util.*;
 
 /** Native UI for the persistent Home window and the activity fallback. */
