@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class WallpaperSync {
     private static final AtomicBoolean BUSY = new AtomicBoolean(false);
     private static final String BING_URL = "https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=en-US";
-    private static final String NASA_URL = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=8&thumbs=true";
+    private static final String NASA_URL = "https://images-api.nasa.gov/search?q=space%20nebula&media_type=image";
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
     public interface Callback {
@@ -51,15 +51,19 @@ public final class WallpaperSync {
                         downloadImage("https://www.bing.com" + it.getString("urlbase") + "_1920x1080.jpg", target);
                     }
                 } else if ("nasa".equals(source)) {
-                    JSONArray items = fetchJsonArray(NASA_URL);
+                    JSONObject res = fetchJson(NASA_URL);
+                    JSONArray items = res.getJSONObject("collection").getJSONArray("items");
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject it = items.getJSONObject(i);
-                        if (!"image".equals(it.optString("media_type"))) continue;
-                        String date = it.getString("date").replace("-", "");
-                        String id = "nasa_" + date;
-                        wallpaperIds.put(id);
-                        File target = StudioConfig.image(app, id);
-                        downloadImage(it.getString("url"), target);
+                        JSONArray dataArr = it.optJSONArray("data");
+                        JSONArray links = it.optJSONArray("links");
+                        if (dataArr == null || links == null || links.length() == 0) continue;
+                        String nasaId = dataArr.getJSONObject(0).getString("nasa_id").replaceAll("[^a-zA-Z0-9_-]", "");
+                        String thumb = links.getJSONObject(0).getString("href");
+                        String origUrl = thumb.replace("~thumb.jpg", "~orig.jpg");
+                        wallpaperIds.put(nasaId);
+                        File target = StudioConfig.image(app, nasaId);
+                        downloadImage(origUrl, target);
                         if (wallpaperIds.length() >= 8) break;
                     }
                 }
