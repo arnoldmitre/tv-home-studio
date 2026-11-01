@@ -187,10 +187,47 @@ public final class HomeSurface extends FrameLayout {
     private void idleMenu(){menu("Home idle screen",Arrays.asList("On: wallpaper at 2 min, sleep at 15 min","Off: use Fire OS idle settings"),Arrays.asList(()->setIdle(true),()->setIdle(false)));}
     private void setIdle(boolean enabled){try{StudioConfig.save(getContext(),StudioConfig.read(getContext()).put("idleScreen",enabled));}catch(Exception e){Toast.makeText(getContext(),"Could not save idle setting",Toast.LENGTH_SHORT).show();}}
     private void customize(){
-        List<String> names=new ArrayList<>(Arrays.asList("Home screen","Themes","Home idle screen","Hidden apps","Network settings"));
-        List<Runnable> actions=new ArrayList<>(Arrays.asList(this::homeMenu,this::themeMenu,this::idleMenu,()->{page="hidden";selected="all";build();},()->launch(new Intent(Settings.ACTION_WIFI_SETTINGS))));
+        List<String> names=new ArrayList<>(Arrays.asList("Home screen","Themes","Wallpaper source","Home idle screen","Hidden apps","Network settings"));
+        List<Runnable> actions=new ArrayList<>(Arrays.asList(this::homeMenu,this::themeMenu,this::wallpaperSourceMenu,this::idleMenu,()->{page="hidden";selected="all";build();},()->launch(new Intent(Settings.ACTION_WIFI_SETTINGS))));
         if(StudioConfig.theme(getContext()).optJSONArray("wallpapers").length()>1){names.add("Next wallpaper");actions.add(()->{String key="wallpaper_index_"+StudioConfig.theme(getContext()).optString("id");prefs.edit().putInt(key,prefs.getInt(key,0)+1).apply();setBackground(HomeWallpaper.background(getContext()));});}
         menu("Make yourself at home",names,actions);
+    }
+    private void wallpaperSourceMenu(){
+        String cur=StudioConfig.theme(getContext()).optString("wallpaperSource","custom");
+        List<String> names=Arrays.asList(
+            "Bing daily landscapes"+(cur.equals("bing")?"  ·  Current":""),
+            "NASA astronomy (APOD)"+(cur.equals("nasa")?"  ·  Current":""),
+            "Custom / phone uploads"+(cur.equals("custom")?"  ·  Current":"")
+        );
+        List<Runnable> actions=Arrays.asList(
+            ()->setWallpaperSource("bing"),
+            ()->setWallpaperSource("nasa"),
+            ()->setWallpaperSource("custom")
+        );
+        menu("Wallpaper source",names,actions);
+    }
+    private void setWallpaperSource(String source){
+        try{
+            JSONObject config=StudioConfig.read(getContext());
+            JSONObject active=StudioConfig.active(config);
+            active.put("wallpaperSource",source);
+            if(!source.equals("custom")&&active.optInt("rotateMinutes",0)==0){
+                active.put("rotateMinutes",30);
+            }
+            StudioConfig.save(getContext(),config);
+            if(source.equals("custom")){
+                Toast.makeText(getContext(),"Using custom wallpapers",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Toast.makeText(getContext(),"Fetching "+source.toUpperCase()+" wallpapers…",Toast.LENGTH_SHORT).show();
+            WallpaperSync.sync(getContext(),source,()->{
+                post(()->{
+                    wallpaperKey=StudioConfig.wallpaper(getContext());
+                    setBackground(HomeWallpaper.background(getContext()));
+                    Toast.makeText(getContext(),"Wallpapers updated!",Toast.LENGTH_SHORT).show();
+                });
+            });
+        }catch(Exception e){Toast.makeText(getContext(),"Could not update wallpaper source",Toast.LENGTH_SHORT).show();}
     }
     private void themeMenu(){
         List<String> names=new ArrayList<>();List<Runnable> actions=new ArrayList<>();
@@ -259,7 +296,20 @@ public final class HomeSurface extends FrameLayout {
     }
     private void updateIdle(){if(idle!=null)idle.active(surfaceActive&&isAttachedToWindow()&&getWindowVisibility()==VISIBLE&&getVisibility()==VISIBLE&&hasWindowFocus()&&StudioConfig.read(getContext()).optBoolean("idleScreen",true));}
     @Override public void onWindowFocusChanged(boolean focus){super.onWindowFocusChanged(focus);updateIdle();}
-    @Override protected void onAttachedToWindow(){super.onAttachedToWindow();updateIdle();if(weather!=null)WeatherInfo.bind(weather);removeCallbacks(wallpaperTick);postDelayed(wallpaperTick,60000);}
+    @Override protected void onAttachedToWindow(){
+        super.onAttachedToWindow();
+        updateIdle();
+        if(weather!=null)WeatherInfo.bind(weather);
+        String src=StudioConfig.theme(getContext()).optString("wallpaperSource","custom");
+        if(!src.equals("custom")){
+            WallpaperSync.checkDaily(getContext(),src,()->post(()->{
+                wallpaperKey=StudioConfig.wallpaper(getContext());
+                setBackground(HomeWallpaper.background(getContext()));
+            }));
+        }
+        removeCallbacks(wallpaperTick);
+        postDelayed(wallpaperTick,60000);
+    }
     @Override protected void onWindowVisibilityChanged(int visibility){super.onWindowVisibilityChanged(visibility);updateIdle();if(wallpaperTick!=null){removeCallbacks(wallpaperTick);if(surfaceActive&&visibility==VISIBLE&&isAttachedToWindow())post(wallpaperTick);}}
     @Override protected void onDetachedFromWindow(){if(idle!=null)idle.stop();removeCallbacks(wallpaperTick);if(weather!=null)WeatherInfo.unbind(weather);super.onDetachedFromWindow();}
     public static void invalidateApps(){catalogRevision++;}

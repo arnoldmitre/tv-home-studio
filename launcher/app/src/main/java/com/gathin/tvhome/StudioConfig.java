@@ -17,7 +17,7 @@ final class StudioConfig {
     static final List<String> FLAGS=Arrays.asList("showClock","showCast","showGreeting","showStatus","showWeather","showPower","animations");
     static JSONObject preset(String id)throws JSONException {
         if(!DESIGNS.contains(id))throw new IllegalArgumentException("Unknown design");
-        JSONObject t=new JSONObject().put("id",id).put("layout",id).put("name",id.equals("classic")?"Classic":id.equals("cinema")?"Cinema":"Panel").put("wallpapers",new JSONArray()).put("rotateMinutes",0).put("inputs","auto");
+        JSONObject t=new JSONObject().put("id",id).put("layout",id).put("name",id.equals("classic")?"Classic":id.equals("cinema")?"Cinema":"Panel").put("wallpapers",new JSONArray()).put("rotateMinutes",0).put("inputs","auto").put("wallpaperSource","custom");
         for(String flag:FLAGS)t.put(flag,true);return t;
     }
     static JSONObject defaults(){try{return new JSONObject().put("schema",2).put("idleScreen",true).put("idleWallpaper","").put("homeName","HOME").put("active","classic").put("weather",new JSONObject().put("mode","off")).put("themes",new JSONArray().put(preset("classic")));}catch(JSONException e){throw new IllegalStateException(e);}}
@@ -50,7 +50,8 @@ final class StudioConfig {
         for(int i=0;i<ts.length();i++){JSONObject t=ts.getJSONObject(i);String id=t.getString("id"),name=t.getString("name").trim(),layout=t.getString("layout");if(!DESIGNS.contains(id)||!ids.add(id)||!id.equals(layout))throw new IllegalArgumentException("Invalid theme");
             int rotation=t.optInt("rotateMinutes",0);if(rotation!=0&&(rotation<1||rotation>1440))throw new IllegalArgumentException("Rotation must be off or 1–1440 minutes");
             JSONArray images=t.optJSONArray("wallpapers");if(images==null)images=new JSONArray();if(images.length()>8)throw new IllegalArgumentException("Eight wallpapers per theme maximum");for(int j=0;j<images.length();j++)if(!id(images.getString(j)))throw new IllegalArgumentException("Invalid image ID");
-            JSONObject normalized=preset(id).put("rotateMinutes",rotation).put("wallpapers",images);for(String flag:FLAGS)normalized.put(flag,t.optBoolean(flag,true));String input=t.optString("inputs","auto");if(!Arrays.asList("auto","show","hide").contains(input))throw new IllegalArgumentException("Invalid Inputs mode");normalized.put("inputs",input);clean.put(normalized);}
+            JSONObject normalized=preset(id).put("rotateMinutes",rotation).put("wallpapers",images);for(String flag:FLAGS)normalized.put(flag,t.optBoolean(flag,true));String input=t.optString("inputs","auto");if(!Arrays.asList("auto","show","hide").contains(input))throw new IllegalArgumentException("Invalid Inputs mode");normalized.put("inputs",input);
+            String src=t.optString("wallpaperSource","custom");if(!Arrays.asList("custom","bing","nasa").contains(src))src="custom";normalized.put("wallpaperSource",src);clean.put(normalized);}
         String active=source.getString("active");if(!ids.contains(active))throw new IllegalArgumentException("Active theme missing");return result.put("active",active).put("themes",clean);
     }
     static synchronized void save(Context c,JSONObject source)throws JSONException{

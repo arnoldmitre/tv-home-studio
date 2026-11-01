@@ -62,7 +62,7 @@ Real captures from a Fire TV Stick HD, with weather and location hidden. Wallpap
 | Theme switching | Choose a design from **TV → Customize → Themes** or explicitly apply it in the phone app. One APK includes all three designs; only one is active. |
 | Independent theme settings | Each design remembers its wallpapers, rotation, optional elements and animation setting. Editing an inactive design does not switch the TV. Reset a design's options without deleting its wallpapers. |
 | Your Home name | Replace “HOME” with your own name, shared across the three layouts and the phone app. |
-| Wallpapers | Upload your own JPEG, PNG or WebP images; use up to eight per design, automatic rotation or **Next wallpaper** on the TV. Recommended: **1920 × 1080, 16:9 landscape**. 4K imports are resized; other shapes are center-cropped. No wallpaper is bundled. |
+| Wallpapers | Choose online sources (**Bing Daily Landscapes** or **NASA APOD**) directly from the TV menu, or upload your own JPEG, PNG or WebP images; use up to eight per design, automatic rotation or **Next wallpaper** on the TV. Recommended: **1920 × 1080, 16:9 landscape**. 4K imports are resized; other shapes are center-cropped. No wallpaper is bundled. |
 | Optional elements | Show or hide the clock, greeting, weather, connection/free-space status, Cast and Power for each design. Turn focus and screensaver animations on or off. |
 | App library and favorites | Open TV apps, pin up to four favorites, reorder them left/right and remove favorites. Hold OK or press Menu on an app for its options. |
 | Hidden apps | Hide apps from Home and bring them back through Hidden apps or the phone. Hiding does not uninstall or disable them. Open an app's system settings from its menu. |
