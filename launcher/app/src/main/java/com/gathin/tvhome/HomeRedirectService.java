@@ -623,9 +623,12 @@ public class HomeRedirectService extends AccessibilityService {
         MainActivity current=MainActivity.currentHome();if(current!=null)current.surface().refresh();
     });}
 
-    static org.json.JSONObject health(Context context)throws org.json.JSONException{return new org.json.JSONObject().put("configured",isEnabled(context)).put("connected",instance!=null&&isEnabled(context)).put("connectionEpoch",connectionEpoch).put("interactive",((android.os.PowerManager)context.getSystemService(POWER_SERVICE)).isInteractive()).put("overlay",instance!=null&&instance.attached).put("readLogs",context.checkSelfPermission(android.Manifest.permission.READ_LOGS)==android.content.pm.PackageManager.PERMISSION_GRANTED);}
+    static boolean isBound() { return instance != null; }
+
+    static org.json.JSONObject health(Context context)throws org.json.JSONException{return new org.json.JSONObject().put("configured",isEnabled(context)).put("connected",(isBound()||HomeWatcherService.isRunning())&&isEnabled(context)).put("connectionEpoch",connectionEpoch).put("interactive",((android.os.PowerManager)context.getSystemService(POWER_SERVICE)).isInteractive()).put("overlay",instance!=null&&instance.attached).put("readLogs",context.checkSelfPermission(android.Manifest.permission.READ_LOGS)==android.content.pm.PackageManager.PERMISSION_GRANTED);}
     static boolean repairHome(Context context){
         if(!isEnabled(context))return false;
+        HomeWatcherService.startIfNecessary(context);
         // Disabling the service can make a provider-only process immediately killable.
         // Move the repair into a resumed activity before disconnecting the service.
         try{context.startActivity(new Intent(context,MainActivity.class).putExtra("repair_home",true)
@@ -634,10 +637,14 @@ public class HomeRedirectService extends AccessibilityService {
     }
     static void repairFromActivity(MainActivity activity){
         if(!setEnabled(activity,false))return;
-        new Handler(Looper.getMainLooper()).postDelayed(()->setEnabled(activity,true),350);
+        new Handler(Looper.getMainLooper()).postDelayed(()->{
+            setEnabled(activity,true);
+            HomeWatcherService.startIfNecessary(activity);
+        },350);
     }
     static boolean chooseHome(Context context,boolean custom){
         if(!setEnabled(context,custom))return false;
+        if(custom)HomeWatcherService.startIfNecessary(context);
         Context app=context.getApplicationContext();
         new Handler(Looper.getMainLooper()).post(()->{
             if(!custom&&instance!=null){instance.handler.removeCallbacksAndMessages(null);instance.cancelRedirect();instance.clearExternalLaunch();instance.destroyOverlay();if(instance.homeWatcher!=null){instance.homeWatcher.close();instance.homeWatcher=null;}}

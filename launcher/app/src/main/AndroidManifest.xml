@@ -61,5 +61,9 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/home_redirect_service" />
         </service>
+
+        <service
+            android:name=".HomeWatcherService"
+            android:exported="false" />
     </application>
 </manifest>
