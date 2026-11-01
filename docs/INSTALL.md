@@ -2,11 +2,11 @@
 
 ## Before either method
 
-See the [compatibility matrix](COMPATIBILITY.md). ARMv7 works on the tested AFTSS; Fire OS 5/6 and Vega OS are unsupported by these builds.
+See the [compatibility matrix](COMPATIBILITY.md). ARMv7 works on the tested AFTSS; Fire OS 5 and Vega OS are unsupported by these builds. Fire OS 6+ is supported.
 
 Use an **Android-based Fire TV**, not Vega OS. Put your phone/computer and TV on the same trusted network. Enable **Settings → My Fire TV → Developer options → ADB debugging**. If Developer options is hidden, open About and select the device name seven times. Find the TV's IP under About → Network. Accept only the authorization prompt from your own phone/computer.
 
-Downloads: [v1.8.0 release](https://github.com/sreeego/tv-home-studio/releases/tag/v1.8.0). The release includes SHA256SUMS.txt. The phone APK and TV APK are different applications.
+Downloads: [Releases](https://github.com/arnoldmitre/tv-home-studio/releases). The release includes SHA256SUMS.txt. The phone APK and TV APK are different applications.
 
 ## With an Android phone
 

@@ -10,8 +10,8 @@
 
 | I want to use… | Download | What it does |
 | --- | --- | --- |
-| **My Android phone** — easiest | **[Phone app](https://github.com/sreeego/tv-home-studio/releases/download/v1.8.0/TV-Home-Studio-Phone-1.8.apk)** | Installs the launcher on your Fire TV and lets you customize it from your phone. |
-| **My computer** | **[TV launcher](https://github.com/sreeego/tv-home-studio/releases/download/v1.8.0/TV-Home-Launcher-4.8.apk)** | The launcher APK to install directly on Fire TV using ADB. |
+| **My Android phone** — easiest | **[Phone app](https://github.com/arnoldmitre/tv-home-studio/releases/latest)** | Installs the launcher on your Fire TV and lets you customize it from your phone. |
+| **My computer** | **[TV launcher](https://github.com/arnoldmitre/tv-home-studio/releases/latest)** | The launcher APK to install directly on Fire TV using ADB. |
 
 **Pick one method. The phone app already includes the TV launcher.**
 
@@ -126,6 +126,6 @@ Upstream device coverage is not a claim of support by this fork. [Detailed compa
 
 ## Help and source
 
-[Latest release](https://github.com/sreeego/tv-home-studio/releases/latest) · [User guide](docs/GUIDE.md) · [Recovery](docs/INSTALL.md#recovery) · [Changelog](CHANGELOG.md) · [Build from source](docs/BUILD.md) · [Validation](docs/VALIDATION.md) · [Privacy](docs/PRIVACY.md)
+[Latest release](https://github.com/arnoldmitre/tv-home-studio/releases/latest) · [User guide](docs/GUIDE.md) · [Recovery](docs/INSTALL.md#recovery) · [Changelog](CHANGELOG.md) · [Build from source](docs/BUILD.md) · [Validation](docs/VALIDATION.md) · [Privacy](docs/PRIVACY.md)
 
 MIT for this project's code, with upstream notices retained. AdbLib is BSD 3-Clause. [Full credits and licenses](docs/CREDITS.md). Wallpapers, app artwork and trademarks belong to their owners; no streaming content or IPTV playlists are distributed.

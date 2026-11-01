@@ -1,3 +1,16 @@
+# Validation — Studio 1.9 / TV Home 4.9
+
+1 November 2026. Physically validated across two hardware devices: Fire TV Stick 4K (AFTKA / Fire OS 7 / API 28) and Fire TV 3rd Gen Pendant (AFTMM / Fire OS 6.2.8.7 / API 25).
+
+- Both APKs (TV Launcher and Phone Companion) compile in GitHub Actions with zero errors; the Companion bundles the matching TV launcher APK.
+- **Fire OS 6 compatibility:** `minSdk` lowered to 25 and `java.nio.file` replaced in `StudioProvider`. Sideloaded and executed on Fire OS 6 (API 25) without SDK incompatibility.
+- **Automatic IP Weather:** Tested on physical devices; successfully queries IP geolocation and Open-Meteo, resolving location and current weather conditions with 24h caching.
+- **Wallpaper Sources:** Verified NASA Image Library API integration and Bing Daily Landscapes. High-definition space photography and daily landscapes download, decode, cache, and rotate properly.
+- **HomeWatcherService Fallback:** On Fire OS 6 where Amazon strips third-party accessibility menus, verified background service running `HomePressWatcher` with `READ_LOGS`. Catches `START u0 ... cat=[android.intent.category.HOME]` and seamlessly anchors TV Home Studio within 30–350ms.
+- **Phone Companion:** Verified compilation of `TV-Home-Studio-Phone-Companion.apk` with `minSdk 28` / target SDK 34 and updated API 25 device connection support in `TvController`.
+
+---
+
 # Validation — Studio 1.8 / TV Home 4.8
 
 31 October 2026. Separate screensaver wallpaper tested on the same AFTSS / Fire OS 7.7.1.7 stick.
