@@ -74,8 +74,8 @@ class TV:
             raise RuntimeError('This installer targets Android-based Fire TV with Amazon Home.')
         self.model = self.shell('getprop', 'ro.product.model')
         sdk = self.shell('getprop', 'ro.build.version.sdk')
-        if not sdk.isdigit() or int(sdk) < 26:
-            raise RuntimeError('TV Home requires Android API 26+. Fire OS 5/6 are unsupported.')
+        if not sdk.isdigit() or int(sdk) < 25:
+            raise RuntimeError('TV Home requires Android API 25+. Fire OS 5 is unsupported.')
 
     def identity(self):
         serial = self.shell('getprop', 'ro.serialno')

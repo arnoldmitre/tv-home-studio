@@ -10,8 +10,6 @@ import android.util.Base64;
 import org.json.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 /** No network listener: only authenticated ADB shell/system can configure the launcher. */
 public final class StudioProvider extends ContentProvider {
@@ -29,7 +27,7 @@ public final class StudioProvider extends ContentProvider {
                 case "weatherRetry":WeatherInfo.retry();response.put("requested",true);break;
                 case "apps":JSONArray apps=new JSONArray();for(ResolveInfo r:c.getPackageManager().queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER),0))if(!r.activityInfo.packageName.equals(c.getPackageName())&&!r.activityInfo.packageName.equals("com.amazon.tv.launcher"))apps.put(new JSONObject().put("package",r.activityInfo.packageName).put("name",r.loadLabel(c.getPackageManager()).toString()));response.put("apps",apps);break;
                 case "appsSave":JSONObject changes=new JSONObject(new String(Base64.decode(arg,Base64.URL_SAFE),StandardCharsets.UTF_8));JSONArray dock=changes.getJSONArray("dock"),hidden=changes.getJSONArray("hidden");if(dock.length()>4||hidden.length()>300)throw new IllegalArgumentException("Too many apps");java.util.ArrayList<String> pins=new java.util.ArrayList<>();java.util.Set<String> hide=new java.util.HashSet<>();for(int i=0;i<dock.length();i++){String p=dock.getString(i);validPackage(p);if(!pins.contains(p))pins.add(p);}for(int i=0;i<hidden.length();i++){String p=hidden.getString(i);validPackage(p);hide.add(p);}StudioConfig.prefs(c).edit().putString("dock",String.join(",",pins)).putStringSet("hidden_v3",hide).putLong("ui_revision",StudioConfig.prefs(c).getLong("ui_revision",0)+1).commit();HomeRedirectService.refreshHome();response.put("saved",true);break;
-                case "commitImage":File target=StudioConfig.image(c,arg),stage=new File(target.getPath()+".upload");if(stage.length()<1||stage.length()>3*1024*1024)throw new IllegalArgumentException("Wallpaper must be under 3 MB");BitmapFactory.Options o=new BitmapFactory.Options();o.inJustDecodeBounds=true;BitmapFactory.decodeFile(stage.getPath(),o);if(o.outWidth<1||o.outHeight<1||o.outWidth>4096||o.outHeight>4096||(long)o.outWidth*o.outHeight>8500000)throw new IllegalArgumentException("Wallpaper dimensions too large");Files.move(stage.toPath(),target.toPath(),StandardCopyOption.REPLACE_EXISTING);response.put("image",arg);break;
+                case "commitImage":File target=StudioConfig.image(c,arg),stage=new File(target.getPath()+".upload");if(stage.length()<1||stage.length()>3*1024*1024)throw new IllegalArgumentException("Wallpaper must be under 3 MB");BitmapFactory.Options o=new BitmapFactory.Options();o.inJustDecodeBounds=true;BitmapFactory.decodeFile(stage.getPath(),o);if(o.outWidth<1||o.outHeight<1||o.outWidth>4096||o.outHeight>4096||(long)o.outWidth*o.outHeight>8500000)throw new IllegalArgumentException("Wallpaper dimensions too large");target.delete();if(!stage.renameTo(target))throw new IOException("Failed to commit image");response.put("image",arg);break;
                 default:throw new IllegalArgumentException("Unknown Studio action");
             }
             result.putString("payload",Base64.encodeToString(response.toString().getBytes(StandardCharsets.UTF_8),Base64.URL_SAFE|Base64.NO_WRAP));
